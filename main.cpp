@@ -1,9 +1,12 @@
 #include <iostream>
 #include <vector>
+#include <time.h>
+#include <windows.h>
 using namespace std;
 
 struct reader {
-    string name, date;
+    string name;
+    int day, month, year, book_ID, returned_flag;
 };
 
 class book{
@@ -63,9 +66,33 @@ public:
         this->Quantity = Quantity;
         this->Instances = Instances;
     }
-
     unsigned int Get_ID(){
         return ID;
+    }
+    void get_book_to_reader(reader r)
+    {
+        
+        this->Instances--;
+        Picked.push_back(r);
+    }
+    int find_index_of_picker_using_name(string name, int ret_flag = 0)
+    {
+        for (int i=0;i<Picked.size();i++)
+        {
+            if (Picked[i].name == name && Picked[i].returned_flag == ret_flag)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+    void set_returned_state(int index)
+    {
+        Picked[index].returned_flag = 1;
+    }
+    void set_Instance(int num)
+    {
+        Instances += num;
     }
 private:
     unsigned int ID, Quantity, Instances;
@@ -91,9 +118,13 @@ vector<cathalog_book> delete_book_from_cathalog(vector<cathalog_book> cathalog, 
     }
     return cathalog;
 }
-
+void return_book(int ID, string name, vector <cathalog_book> &catalog);
+vector <reader> readers_with_more_one_year_storing_book(vector <reader> r);
 
 int main() {
+    setlocale(LC_ALL, "russian");
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
     vector<book> books;
     vector<cathalog_book> cathalog;
     book first;
@@ -104,15 +135,72 @@ int main() {
     vector<reader> readers;
     books.push_back(first);
     struct reader rdr;
-    cathalog = delete_book_from_cathalog(cathalog, 10);
+    //cathalog = delete_book_from_cathalog(cathalog, 10);
     for (auto el : cathalog){
         cout << el.Get_ID() << " ";
     }
-    rdr.name = "Василий";
-    rdr.date = "01.01.2020";
-    readers.push_back(rdr);
-    rdr.name = "Алёша";
-    rdr.date = "05.02.2020";
-    readers.push_back(rdr);
+    std::time_t rawtime = std::time({});
+    time(&rawtime);
+    struct tm* timeinfo;
+    timeinfo = localtime(&rawtime);
+    //создание тут говорит о том, что он сегодня берет...
+    reader r;
+    r.name = "Vasya";
+    r.day = timeinfo->tm_mday;
+    r.month = timeinfo->tm_mon;
+    r.year = timeinfo->tm_year;
+    r.book_ID = 0;//айди книги сюдаааа
+    r.returned_flag = 0;
+    readers.push_back(r);
+    cathalog[0].get_book_to_reader(r);
+    return_book(r.book_ID, r.name, cathalog);
+    readers_with_more_one_year_storing_book(readers);
     return 0;
+}
+vector <reader> readers_with_more_one_year_storing_book(vector <reader> r)
+{
+    vector <reader> black;
+    std::time_t rawtime = std::time({});
+    time(&rawtime);
+    struct tm* timeinfo;
+    timeinfo = localtime(&rawtime);
+    int year = timeinfo->tm_year;
+    int month = timeinfo->tm_mon;
+    int day = timeinfo->tm_mday;
+    for (int i = 0; i < r.size(); i++)
+    {
+        if (abs(r[i].year - year) > 1)
+        {
+            black.push_back(r[i]);
+            continue;
+        }
+        else if (abs(r[i].year - year) ==1) {
+            if (month - r[i].month > 0)
+            {
+                black.push_back(r[i]);
+                continue;
+            }
+            else if (month - r[i].month ==0 && day - r[i].day > 0)
+            {
+                black.push_back(r[i]);
+                continue;
+            }
+        }
+    }
+    return black;
+}
+void return_book(int ID, string name, vector <cathalog_book>& catalog)
+{
+    for (int i = 0; i < catalog.size(); i++)
+    {
+        if (catalog[i].Get_ID() == ID)
+        {
+            int index = catalog[i].find_index_of_picker_using_name(name);
+            if (index != -1)
+            {
+                catalog[i].set_returned_state(index);
+                catalog[i].set_Instance(1);
+            }
+        }
+    }
 }
