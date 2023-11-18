@@ -14,12 +14,12 @@ struct reader {
 
 class book{
 public:
-    void create_book(string title, string publisher, unsigned int year, unsigned int pages, string author){
+    void create_book(string title, string publisher, unsigned int year, unsigned int pages, vector<string> authors){
         this->title = title;
         this->publisher = publisher;
         this->year = year;
         this->pages = pages;
-        authors.push_back(author);
+        this->authors = authors;
     }
 
     book(){
@@ -28,12 +28,12 @@ public:
         this->year = 0;
         this->pages = 0;
     }
-    book(string title, string publisher, unsigned int year, unsigned int pages, string author){
+    book(string title, string publisher, unsigned int year, unsigned int pages, vector<string> authors){
         this->title = title;
         this->publisher = publisher;
         this->year = year;
         this->pages = pages;
-        authors.push_back(author);
+        this->authors = authors;
     }
     ~book(){}
 
@@ -43,6 +43,10 @@ public:
 
     string Get_publisher(){
         return publisher;
+    }
+
+    vector<string> Get_authors(){
+        return authors;
     }
 
     unsigned int Get_year(){
@@ -66,6 +70,7 @@ public:
         this->year = a.Get_year();
         this->pages = a.Get_pages();
         this->ID = ID;
+        this->authors = a.Get_authors();
         this->Quantity = Quantity;
         this->Instances = Instances;
     }
@@ -97,8 +102,12 @@ public:
         Instances += num;
     }
 
-    void information_about_book(cathalog_book cathalog_book){
-        cout << "Информация по книге:\nНазвание: " << cathalog_book.title << "\nАвтор:\nГод издания: " << cathalog_book.year << "\nИздательство: " << cathalog_book.publisher << "\nКоличество страниц: " << cathalog_book.pages << "\n";
+    void information_about_book(){
+        cout << "Информация по книге:\nНазвание: " << title << "\nАвтор/ы: ";
+        for (auto el : authors){
+            cout << el << " ";
+        }
+        cout << "\nГод издания: " << year << "\nИздательство: " << publisher << "\nКоличество страниц: " << pages << "\n";
     }
     
 private:
@@ -109,7 +118,7 @@ private:
 void Get_information_about_book_and_readers(vector<cathalog_book> catalog, vector<reader> readers, unsigned int ID){
     for (int i = 0; i < catalog.size(); i++){
         if (catalog[i].Get_ID() == ID){
-            catalog[i].information_about_book(catalog[i]);
+            catalog[i].information_about_book();
             cout << "Информация о читателе: ";
             for (int j = 0; j < readers.size(); j++) {
                 int index = catalog[i].find_index_of_picker_using_name(readers[j].name);
@@ -124,16 +133,16 @@ void Get_information_about_book_and_readers(vector<cathalog_book> catalog, vecto
 void Find_book_by_name(vector<cathalog_book> catalog, string title){
     for (int i = 0; i < catalog.size(); i++){
         if (catalog[i].Get_title() == title){
-            catalog[i].information_about_book(catalog[i]);
+            catalog[i].information_about_book();
             cout << "ID: " << catalog[i].Get_ID() << "\n";
         }
     }
 }
 
-void Find_book_by_author(vector<cathalog_book> catalog, string author){
+void Find_book_by_author(vector<cathalog_book> catalog, vector<string> authors){
     for (int i = 0; i < catalog.size(); i++){
-        if (catalog[i].Get_title() == author){
-            catalog[i].information_about_book(catalog[i]);
+        if (catalog[i].Get_authors() == authors){
+            catalog[i].information_about_book();
             cout << "ID: " << catalog[i].Get_ID() << "\n";
         }
     }
@@ -162,13 +171,18 @@ vector <reader> readers_with_more_one_year_storing_book(vector <reader> r);
 
 int main() {
     setlocale(LC_ALL, "russian");
+    vector<string> authors = {"First author", "Second author", "Third author"};
     vector<book> books;
     vector<cathalog_book> cathalog;
-    book first;
-    first.create_book("33 developers", "RussianGovernment", 1673, 321, "Me");
+    book first, second;
+    first.create_book("33 developers", "RussianGovernment", 1673, 321, authors);
+    second.create_book("44 developers", "PrussianGovernment", 1673, 321, authors);
     cathalog_book element_of_cathalog;
     element_of_cathalog.add_book_to_cathalog(first, 0, 100, 100);
     cathalog.push_back(element_of_cathalog);
+    element_of_cathalog.add_book_to_cathalog(second, 1, 100, 100);
+    cathalog.push_back(element_of_cathalog);
+    vector<string> test = first.Get_authors();
     vector<reader> readers;
     books.push_back(first);
     struct reader rdr;
@@ -190,8 +204,9 @@ int main() {
     r.returned_flag = 0;
     readers.push_back(r);
     cathalog[0].get_book_to_reader(r);
-    // Get_information_about_book_and_readers(cathalog, readers,0);
-    Find_book_by_name(cathalog, "33 developers");
+    Get_information_about_book_and_readers(cathalog, readers,0);
+    // Find_book_by_name(cathalog, "44 developers");
+    Find_book_by_author(cathalog, authors);
     return_book(r.book_ID, r.name, cathalog);
     readers_with_more_one_year_storing_book(readers);
     return 0;
