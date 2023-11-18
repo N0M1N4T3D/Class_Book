@@ -1,12 +1,15 @@
 #include <iostream>
 #include <vector>
 #include <time.h>
-#include <windows.h>
 using namespace std;
 
 struct reader {
     string name;
     int day, month, year, book_ID, returned_flag;
+
+    void information_about_reader(reader reader){
+        cout << "\nИмя: " << reader.name << "\nДата: " << reader.day << "." << reader.month << "." << reader.year << "\n";
+    }
 };
 
 class book{
@@ -90,15 +93,54 @@ public:
     {
         Picked[index].returned_flag = 1;
     }
-    void set_Instance(int num)
-    {
+    void set_Instance(int num) {
         Instances += num;
+    }
+
+    void information_about_book(cathalog_book cathalog_book){
+        cout << "Информация по книге:\nНазвание: " << cathalog_book.title << "\nАвтор:\nГод издания: " << cathalog_book.year << "\nИздательство: " << cathalog_book.publisher << "\nКоличество страниц: " << cathalog_book.pages << "\n";
+    }
+
+    void Find_book_by_name(cathalog_book cathalog_book){
+
     }
 private:
     unsigned int ID, Quantity, Instances;
     vector<reader> Picked;
 };
 
+void Get_information_about_book_and_readers(vector<cathalog_book> catalog, vector<reader> readers, unsigned int ID){
+    for (int i = 0; i < catalog.size(); i++){
+        if (catalog[i].Get_ID() == ID){
+            catalog[i].information_about_book(catalog[i]);
+            cout << "Информация о читателе: ";
+            for (int j = 0; j < readers.size(); j++) {
+                int index = catalog[i].find_index_of_picker_using_name(readers[j].name);
+                if (index != -1) {
+                    readers[j].information_about_reader(readers[j]);
+                }
+            }
+        }
+    }
+}
+
+void Find_book_by_name(vector<cathalog_book> catalog, string title){
+    for (int i = 0; i < catalog.size(); i++){
+        if (catalog[i].Get_title() == title){
+            catalog[i].information_about_book(catalog[i]);
+            cout << "ID: " << catalog[i].Get_ID() << "\n";
+        }
+    }
+}
+
+void Find_book_by_author(vector<cathalog_book> catalog, string author){
+    for (int i = 0; i < catalog.size(); i++){
+        if (catalog[i].Get_title() == author){
+            catalog[i].information_about_book(catalog[i]);
+            cout << "ID: " << catalog[i].Get_ID() << "\n";
+        }
+    }
+}
 
 //Удаление внекласса так как необходимо удалить книгу из векторов (как я понял)
 vector<book> delete_book(vector<book> books, string title) {
@@ -123,15 +165,13 @@ vector <reader> readers_with_more_one_year_storing_book(vector <reader> r);
 
 int main() {
     setlocale(LC_ALL, "russian");
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
     vector<book> books;
     vector<cathalog_book> cathalog;
     book first;
+    first.create_book("33 developers", "RussianGovernment", 1673, 321, "Me");
     cathalog_book element_of_cathalog;
     element_of_cathalog.add_book_to_cathalog(first, 0, 100, 100);
     cathalog.push_back(element_of_cathalog);
-    first.create_book("33 developers", "RussianGovernment", 1673, 321, "Me");
     vector<reader> readers;
     books.push_back(first);
     struct reader rdr;
@@ -153,6 +193,8 @@ int main() {
     r.returned_flag = 0;
     readers.push_back(r);
     cathalog[0].get_book_to_reader(r);
+    // Get_information_about_book_and_readers(cathalog, readers,0);
+    Find_book_by_name(cathalog, "33 developers");
     return_book(r.book_ID, r.name, cathalog);
     readers_with_more_one_year_storing_book(readers);
     return 0;
@@ -196,8 +238,7 @@ void return_book(int ID, string name, vector <cathalog_book>& catalog)
         if (catalog[i].Get_ID() == ID)
         {
             int index = catalog[i].find_index_of_picker_using_name(name);
-            if (index != -1)
-            {
+            if (index != -1) {
                 catalog[i].set_returned_state(index);
                 catalog[i].set_Instance(1);
             }
