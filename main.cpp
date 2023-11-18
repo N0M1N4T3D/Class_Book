@@ -100,10 +100,7 @@ public:
     void information_about_book(cathalog_book cathalog_book){
         cout << "Информация по книге:\nНазвание: " << cathalog_book.title << "\nАвтор:\nГод издания: " << cathalog_book.year << "\nИздательство: " << cathalog_book.publisher << "\nКоличество страниц: " << cathalog_book.pages << "\n";
     }
-
-    void Find_book_by_name(cathalog_book cathalog_book){
-
-    }
+    
 private:
     unsigned int ID, Quantity, Instances;
     vector<reader> Picked;
