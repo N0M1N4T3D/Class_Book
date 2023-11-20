@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <time.h>
+#include <Windows.h>
+#include <string>
 using namespace std;
 
 struct reader {
@@ -8,7 +10,7 @@ struct reader {
     int day, month, year, book_ID, returned_flag;
 
     void information_about_reader(reader reader){
-        cout << "\nИмя: " << reader.name << "\nДата: " << reader.day << "." << reader.month << "." << reader.year << "\n";
+        cout << "\nИмя: " << reader.name << "\nДата: " << reader.day << "." << reader.month+1 << "." << reader.year+1900 << "\n";
     }
 };
 
@@ -103,7 +105,7 @@ public:
     }
 
     void information_about_book(){
-        cout << "Информация по книге:\nНазвание: " << title << "\nАвтор/ы: ";
+        cout << "Информация по книге:\nНазвание: " << title << "\nАвторы: ";
         for (auto el : authors){
             cout << el << " ";
         }
@@ -170,10 +172,52 @@ void return_book(int ID, string name, vector <cathalog_book> &catalog);
 vector <reader> readers_with_more_one_year_storing_book(vector <reader> r);
 
 int main() {
-    setlocale(LC_ALL, "russian");
+    //setlocale(LC_ALL, "russian");
+    SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
     vector<string> authors = {"First author", "Second author", "Third author"};
     vector<book> books;
     vector<cathalog_book> cathalog;
+
+    int sw_num;
+    while (1)
+    {
+        std::cin >> sw_num;
+        switch (sw_num)
+        {
+        case 1://создание книги
+        {
+            book b_new;
+            std::cout << "Укажите автора\n";
+            string author;
+            std::getline(cin, author);
+            std::cout << "Укажите издательство\n";
+            string publisher;
+            std::getline(cin, publisher);
+            std::cout << "Укажите год издания\n";
+            unsigned int year;
+            std::cin >> year;
+            std::cout << "Введите количество страниц\n";
+            unsigned int pages;
+            std::cin >> pages;
+            std::cout << "Введите количество авторов\n";
+            unsigned int author_count;
+            std::cin >> author_count;
+            for (int i = 0; i < author_count; i++)
+            {
+                string auth;
+                getline(cin, auth);
+                authors.push_back(auth);
+            }
+        }
+        case 2://удаление книги
+        {
+
+        }
+        default:
+            break;
+        }
+    }
     book first, second;
     first.create_book("33 developers", "RussianGovernment", 1673, 321, authors);
     second.create_book("44 developers", "PrussianGovernment", 1673, 321, authors);
@@ -190,6 +234,7 @@ int main() {
     for (auto el : cathalog){
         cout << el.Get_ID() << " ";
     }
+    cout << endl;
     std::time_t rawtime = std::time({});
     time(&rawtime);
     struct tm* timeinfo;
@@ -200,7 +245,7 @@ int main() {
     r.day = timeinfo->tm_mday;
     r.month = timeinfo->tm_mon;
     r.year = timeinfo->tm_year;
-    r.book_ID = 0;//айди книги сюдаааа
+    r.book_ID = 0;
     r.returned_flag = 0;
     readers.push_back(r);
     cathalog[0].get_book_to_reader(r);
