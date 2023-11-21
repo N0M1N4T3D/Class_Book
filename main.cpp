@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <time.h>
-//#include <Windows.h>
+#include <Windows.h>
 #include <string>
 //#include <conio.h>
 #include <stdio.h>
@@ -10,7 +10,7 @@ using namespace std;
 int id_counter=0;
 struct reader {
     string name;
-    int day, month, year, book_ID, returned_flag;
+    int day, month, year, book_ID, returned_flag, id;
 
     void information_about_reader(reader reader){
         cout << "\nИмя: " << reader.name << "\nДата: " << reader.day << "." << reader.month+1 << "." << reader.year+1900 << "\n";
@@ -205,8 +205,8 @@ void print_menu()
 int main() {
     //setlocale(LC_ALL, "russian");
 
-    //SetConsoleCP(CP_UTF8);
-    //SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
 
     vector<string> authors;
     vector<book> books;
@@ -214,10 +214,32 @@ int main() {
     vector<reader> readers;
     cathalog_book CATA;
     int sw_num;
+    //создаю ридера
+    //создание тут говорит о том, что он сегодня берет...
+    std::time_t rawtime = std::time({});
+    std::time(&rawtime);
+    struct tm* timeinfo;
+    timeinfo = localtime(&rawtime);
+    reader r;
+    r.name = "Vasya";
+    r.day = timeinfo->tm_mday;
+    r.month = timeinfo->tm_mon;
+    r.year = timeinfo->tm_year;
+    r.book_ID = 0;
+    r.returned_flag = 0;
+    r.id = 0;
+    readers.push_back(r);
     print_menu();
     while (1)
     {
-        std::cin >> sw_num;
+        string sw_str;
+        getline(cin, sw_str);
+        sw_num = validator_unsigned_int(sw_str);
+        if (sw_num == SN)
+        {
+            continue;
+        }
+        //std::cin >> sw_num;
         switch (sw_num)
         {
         case 1://создание книги
@@ -474,6 +496,7 @@ int main() {
                 break;
             }
             Get_information_about_book_and_readers(cathalog, readers, tmp1);
+            cout << endl;
             system("pause");
             system("cls");
             print_menu();
@@ -569,19 +592,25 @@ int main() {
             print_menu();
             break;
         }
-        case 10: { //работоспособность не проверял
+        case 10: { //дать читателю книгу
             system("cls");
+            if (cathalog.size() == 0)
+            {
+                cout << "Каталог пуст(\n";
+                break;
+            }
             for (int i = 0; i < books.size(); i++)
             {
                 cout << "----------------------------\n";
                 books[i].information_about_book();
+                cout << "ID: " << cathalog[i].Get_ID() << '\n';
             }
             string id_book;
             cin.ignore();
-            cout << "Какую выдать книгу (введите название): " << endl;
+            cout << "Какую выдать книгу (введите ID): " << endl;
             getline(cin, id_book);
             unsigned int tmp1 = validator_unsigned_int(id_book);
-            if (tmp1 == SN || tmp1>=cathalog.size())
+            if (tmp1 == SN || tmp1>id_counter)
             {
                 cout << "Неверный ID\n";
                 system("pause");
@@ -591,13 +620,13 @@ int main() {
             }
             cout << "Кому выдать книгу (введите ID по порядку): " << endl;
             for (auto el : readers){
-                cout << &el << " ";
+                cout << "Name - " << el.name << ", ID -  " << el.id<<endl;
             }
             string id_reader;
-            cin.ignore();
+            //cin.ignore();
             getline(cin, id_reader);
             unsigned int tmp2 = validator_unsigned_int(id_reader);
-            if (tmp2 == SN || tmp2>=readers.size())
+            if (tmp2 == SN || tmp2>id_counter)
             {
                 cout << "Неверный reader\n";
                 system("pause");
@@ -606,22 +635,23 @@ int main() {
                 break;
             }
             cathalog[tmp2].get_book_to_reader(readers[tmp2]);
-            system("pause");
             cout << "Успех!\n";
+            system("pause");
             system("cls");
             print_menu();
             break;
         }
-        case 11: { //работоспособность не проверял
+        case 11: {// Возврат книги читателем 
             system("cls");
             for (int i = 0; i < books.size(); i++)
             {
                 cout << "----------------------------\n";
                 books[i].information_about_book();
+                cout << "ID: " << cathalog[i].Get_ID() << '\n';
             }
             string id_book;
             cin.ignore();
-            cout << "Какую книгу вернуть (введите название): " << endl;
+            cout << "Какую книгу вернуть (Введите ID): " << endl;
             getline(cin, id_book);
             unsigned int tmp1 = validator_unsigned_int(id_book);
             if (tmp1 == SN || tmp1>=cathalog.size())
@@ -634,10 +664,10 @@ int main() {
             }
             cout << "Кто хочет вернуть книгу (введите ID по порядку): " << endl;
             for (auto el : readers){
-                cout << &el << " ";
+                cout << "Name - " << el.name << ", ID -  " << el.id << endl;
             }
             string id_reader;
-            cin.ignore();
+            //cin.ignore();
             getline(cin, id_reader);
             unsigned int tmp2 = validator_unsigned_int(id_reader);
             if (tmp2 == SN || tmp2>=readers.size())
@@ -649,14 +679,25 @@ int main() {
                 break;
             }
             return_book(tmp1, readers[tmp2].name , cathalog);
-            system("pause");
             cout << "Успех!\n";
+            system("pause");
             system("cls");
             print_menu();
             break;
         }
         case 12: { //работоспособность не проверял
-            readers_with_more_one_year_storing_book(readers);
+            vector <reader> black_guys = readers_with_more_one_year_storing_book(readers);
+            if (black_guys.size() == 0)
+            {
+                cout << "Нет таких)\n";
+            }
+            else
+            {
+                for (int i = 0; i < black_guys.size(); i++)
+                {
+                    std::cout << "Name - " << black_guys[i].name << ", ID - " << black_guys[i].id << endl;
+                }
+            }
             system("pause");
             cout << "Успех!\n";
             system("cls");
@@ -667,26 +708,6 @@ int main() {
             break;
         }
     }
-
-    std::time_t rawtime = std::time({});
-    std::time(&rawtime);
-    struct tm* timeinfo;
-    timeinfo = localtime(&rawtime);
-    //создание тут говорит о том, что он сегодня берет...
-    reader r;
-    r.name = "Vasya";
-    r.day = timeinfo->tm_mday;
-    r.month = timeinfo->tm_mon;
-    r.year = timeinfo->tm_year;
-    r.book_ID = 0;
-    r.returned_flag = 0;
-    readers.push_back(r);
-    cathalog[0].get_book_to_reader(r);
-    Get_information_about_book_and_readers(cathalog, readers,0);
-    // Find_book_by_name(cathalog, "44 developers");
-    Find_book_by_author(cathalog, authors);
-    return_book(r.book_ID, r.name, cathalog);
-    readers_with_more_one_year_storing_book(readers);
     return 0;
 }
 vector <reader> readers_with_more_one_year_storing_book(vector <reader> r)
