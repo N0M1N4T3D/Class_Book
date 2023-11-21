@@ -1,9 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <time.h>
-#include <Windows.h>
+//#include <Windows.h>
 #include <string>
-#include <conio.h>
+//#include <conio.h>
 #include <stdio.h>
 #define SN 1000000007
 using namespace std;
@@ -133,8 +133,10 @@ void Get_information_about_book_and_readers(vector<cathalog_book> catalog, vecto
     for (int i = 0; i < catalog.size(); i++){
         if (catalog[i].Get_ID() == ID){
             catalog[i].information_about_book();
-            cout << "Информация о читателе: ";
             for (int j = 0; j < readers.size(); j++) {
+                if (j == 0){
+                    cout << "Информация о читателе: ";
+                }
                 int index = catalog[i].find_index_of_picker_using_name(readers[j].name);
                 if (index != -1) {
                     readers[j].information_about_reader(readers[j]);
@@ -192,19 +194,25 @@ void print_menu()
         << "3. Вывод списка книг" << endl
         << "4. Добавление книги в каталог" << endl
         << "5. Удаление книги из каталога" << endl
-        << "6. Вывод каталога" << endl;
+        << "6. Вывод каталога" << endl
+        << "7. Вывод информации по книге и читателям, взявшим книгу (по идентификатору книги)" << endl
+    	<< "8. Поиск книги в каталоге по названию с выдачей идентификатора" << endl
+        << "9. Поиск книги в каталоге по автору с выдачей идентификатора" << endl
+        << "10. Выдача книги читателю" << endl
+        << "11. Возврат книги читателем" << endl
+        << "12. Вывод списка читателей, не вернувших книги в течение года" << endl;
 }
 int main() {
     //setlocale(LC_ALL, "russian");
-    SetConsoleCP(CP_UTF8);
-    SetConsoleOutputCP(CP_UTF8);
+
+    //SetConsoleCP(CP_UTF8);
+    //SetConsoleOutputCP(CP_UTF8);
 
     vector<string> authors;
     vector<book> books;
     vector<cathalog_book> cathalog;
     vector<reader> readers;
     cathalog_book CATA;
-
     int sw_num;
     print_menu();
     while (1)
@@ -221,9 +229,10 @@ int main() {
             string name;
             cin.ignore();
             getline(cin, name);
+            /*
             std::cout << "Укажите автора\n";
             string author;
-            std::getline(cin, author);
+            std::getline(cin, author); */
             std::cout << "Укажите издательство\n";
             string publisher;
             std::getline(cin, publisher);
@@ -281,25 +290,21 @@ int main() {
                 cout << "Не стоит меня ломать, я просто программа(\n";
                 break;
             }
-            for (int i = 0; i < _author_count; i++)
-            {
+            for (int i = 0; i < _author_count; i++) {
                 string auth;
                 cout << "Введите автора " << i + 1 << '\n';
                 getline(cin, auth);
                 int flag = 0;
-                for (int i = 0; i < authors.size(); i++)
-                {
-                    if (authors[i] == auth)
-                    {
+                for (int i = 0; i < authors.size(); i++) {
+                    if (authors[i] == auth) {
                         flag = 1;
                     }
                 }
-                if (flag == 0)
-                {
+                if (flag == 0) {
                     authors.push_back(auth);
                 }
                 auth_v.push_back(auth);
-                }
+            }
             b_new.create_book(name, publisher, _year, _pages, auth_v);
             books.push_back(b_new);
             //CATA.add_book_to_cathalog(b_new,id_counter++,_quant,_inst);
@@ -337,6 +342,9 @@ int main() {
             else
             {
                 cout << "Нет такой книжки(\n";
+                system("pause");
+                system("cls");
+                print_menu();
                 break;
             }
             system("cls");
@@ -450,11 +458,216 @@ int main() {
             print_menu();
             break;
         }
+        case 7: {
+            unsigned int id;
+            cout << endl <<"Введите ID книги для вывода информации\n";
+            string id_book;
+            cin.ignore();
+            getline(cin, id_book);
+            unsigned int tmp1 = validator_unsigned_int(id_book);
+            if (tmp1 == SN || tmp1>=cathalog.size())
+            {
+                cout << "Неверный ID\n";
+                system("pause");
+                system("cls");
+                print_menu();
+                break;
+            }
+            Get_information_about_book_and_readers(cathalog, readers, tmp1);
+            system("pause");
+            system("cls");
+            print_menu();
+            break;
+        }
+        case 8: {
+            system("cls");
+            for (int i = 0; i < books.size(); i++)
+            {
+                cout << "----------------------------\n";
+                books[i].information_about_book();
+            }
+            string title;
+            cin.ignore();
+            cout << "Введите название книги: ";
+            getline(cin, title);
+            int f = 0;
+            for (int i = 0; i < books.size(); i++)
+            {
+                if (books[i].Get_title() == title)
+                {
+                    f = 1;
+                    break;
+                }
+            }
+            if (f==1){
+                Find_book_by_name(cathalog, title);
+            }
+            else
+            {
+                cout << "Нет такой книжки(\n";
+                system("pause");
+                system("cls");
+                print_menu();
+                break;
+            }
+            system("cls");
+            cout << "Успех!\n";
+            system("pause");
+            system("cls");
+            print_menu();
+            break;
+        }
+        case 9: {
+            system("cls");
+            for (int i = 0; i < books.size(); i++)
+            {
+                cout << "----------------------------\n";
+                books[i].information_about_book();
+            }
+            vector<string> authors;
+            std::cout << "Введите количество авторов\n";
+            cin.ignore();
+            string author_count;
+            getline(cin, author_count);
+            unsigned int _author_count;
+            _author_count = validator_unsigned_int(author_count);
+            if (_author_count == SN)
+            {
+                cout << "Не стоит меня ломать, я просто программа(\n";
+                break;
+            }
+            for (int i = 0; i < _author_count; i++) {
+                string auth;
+                cout << "Введите автора " << i + 1 << '\n';
+                getline(cin, auth);
+                authors.push_back(auth);
+            }
+            int f = 0;
+            for (int i = 0; i < books.size(); i++)
+            {
+                if (books[i].Get_authors() == authors)
+                {
+                    f = 1;
+                    break;
+                }
+            }
+            if (f==1){
+                Find_book_by_author(cathalog, authors);
+            }
+            else
+            {
+                cout << "Нет такой книжки(\n";
+                system("pause");
+                system("cls");
+                print_menu();
+                break;
+            }
+            system("cls");
+            cout << "Успех!\n";
+            system("pause");
+            system("cls");
+            print_menu();
+            break;
+        }
+        case 10: { //работоспособность не проверял
+            system("cls");
+            for (int i = 0; i < books.size(); i++)
+            {
+                cout << "----------------------------\n";
+                books[i].information_about_book();
+            }
+            string id_book;
+            cin.ignore();
+            cout << "Какую выдать книгу (введите название): " << endl;
+            getline(cin, id_book);
+            unsigned int tmp1 = validator_unsigned_int(id_book);
+            if (tmp1 == SN || tmp1>=cathalog.size())
+            {
+                cout << "Неверный ID\n";
+                system("pause");
+                system("cls");
+                print_menu();
+                break;
+            }
+            cout << "Кому выдать книгу (введите ID по порядку): " << endl;
+            for (auto el : readers){
+                cout << &el << " ";
+            }
+            string id_reader;
+            cin.ignore();
+            getline(cin, id_reader);
+            unsigned int tmp2 = validator_unsigned_int(id_reader);
+            if (tmp2 == SN || tmp2>=readers.size())
+            {
+                cout << "Неверный reader\n";
+                system("pause");
+                system("cls");
+                print_menu();
+                break;
+            }
+            cathalog[tmp2].get_book_to_reader(readers[tmp2]);
+            system("pause");
+            cout << "Успех!\n";
+            system("cls");
+            print_menu();
+            break;
+        }
+        case 11: { //работоспособность не проверял
+            system("cls");
+            for (int i = 0; i < books.size(); i++)
+            {
+                cout << "----------------------------\n";
+                books[i].information_about_book();
+            }
+            string id_book;
+            cin.ignore();
+            cout << "Какую книгу вернуть (введите название): " << endl;
+            getline(cin, id_book);
+            unsigned int tmp1 = validator_unsigned_int(id_book);
+            if (tmp1 == SN || tmp1>=cathalog.size())
+            {
+                cout << "Неверный ID\n";
+                system("pause");
+                system("cls");
+                print_menu();
+                break;
+            }
+            cout << "Кто хочет вернуть книгу (введите ID по порядку): " << endl;
+            for (auto el : readers){
+                cout << &el << " ";
+            }
+            string id_reader;
+            cin.ignore();
+            getline(cin, id_reader);
+            unsigned int tmp2 = validator_unsigned_int(id_reader);
+            if (tmp2 == SN || tmp2>=readers.size())
+            {
+                cout << "Неверный reader\n";
+                system("pause");
+                system("cls");
+                print_menu();
+                break;
+            }
+            return_book(tmp1, readers[tmp2].name , cathalog);
+            system("pause");
+            cout << "Успех!\n";
+            system("cls");
+            print_menu();
+            break;
+        }
+        case 12: { //работоспособность не проверял
+            readers_with_more_one_year_storing_book(readers);
+            system("pause");
+            cout << "Успех!\n";
+            system("cls");
+            print_menu();
+            break;
+        }
         default:
             break;
         }
     }
-    
+
     std::time_t rawtime = std::time({});
     std::time(&rawtime);
     struct tm* timeinfo;
