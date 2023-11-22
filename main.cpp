@@ -3,21 +3,20 @@
 #include <time.h>
 #include <Windows.h>
 #include <string>
-//#include <conio.h>
 #include <stdio.h>
 #define SN 1000000007
 using namespace std;
-int id_counter=0;
+int id_counter = 0;
 struct reader {
     string name;
     int day, month, year, book_ID, returned_flag, id;
 
-    void information_about_reader(reader reader){
-        cout << "\nИмя: " << reader.name << "\nДата: " << reader.day << "." << reader.month+1 << "." << reader.year+1900 << "\n";
+    void information_about_reader(reader reader) {
+        cout << "\nИмя: " << reader.name << "\nДата: " << reader.day << "." << reader.month + 1 << "." << reader.year + 1900 << "\n";
     }
 };
 
-class book{
+class book {
 public:
     void information_about_book() {
         cout << "Информация по книге:\nНазвание: " << title << "\nАвторы: ";
@@ -26,7 +25,7 @@ public:
         }
         cout << "\nГод издания: " << year << "\nИздательство: " << publisher << "\nКоличество страниц: " << pages << "\n";
     }
-    void create_book(string title, string publisher, unsigned int year, unsigned int pages, vector<string> authors){
+    void create_book(string title, string publisher, unsigned int year, unsigned int pages, vector<string> authors) {
         this->title = title;
         this->publisher = publisher;
         this->year = year;
@@ -34,38 +33,38 @@ public:
         this->authors = authors;
     }
 
-    book(){
+    book() {
         this->title = "None";
         this->publisher = "None";
         this->year = 0;
         this->pages = 0;
     }
-    book(string title, string publisher, unsigned int year, unsigned int pages, vector<string> authors){
+    book(string title, string publisher, unsigned int year, unsigned int pages, vector<string> authors) {
         this->title = title;
         this->publisher = publisher;
         this->year = year;
         this->pages = pages;
         this->authors = authors;
     }
-    ~book(){}
+    ~book() {}
 
-    string Get_title(){
+    string Get_title() {
         return title;
     }
 
-    string Get_publisher(){
+    string Get_publisher() {
         return publisher;
     }
 
-    vector<string> Get_authors(){
+    vector<string> Get_authors() {
         return authors;
     }
 
-    unsigned int Get_year(){
+    unsigned int Get_year() {
         return year;
     }
 
-    unsigned int Get_pages(){
+    unsigned int Get_pages() {
         return pages;
     }
 protected:
@@ -74,9 +73,9 @@ protected:
     vector<string> authors;
 };
 
-class cathalog_book: public book {
+class cathalog_book : public book {
 public:
-    void add_book_to_cathalog(book a, unsigned int ID, unsigned int Quantity, unsigned int Instances){
+    void add_book_to_cathalog(book a, unsigned int ID, unsigned int Quantity, unsigned int Instances) {
         this->title = a.Get_title();
         this->publisher = a.Get_publisher();
         this->year = a.Get_year();
@@ -86,7 +85,7 @@ public:
         this->Quantity = Quantity;
         this->Instances = Instances;
     }
-    unsigned int Get_ID(){
+    unsigned int Get_ID() {
         return ID;
     }
     unsigned int get_instances()
@@ -99,13 +98,13 @@ public:
     }
     void get_book_to_reader(reader r)
     {
-        
+
         this->Instances--;
         Picked.push_back(r);
     }
     int find_index_of_picker_using_name(string name, int ret_flag = 0)
     {
-        for (int i=0;i<Picked.size();i++)
+        for (int i = 0; i < Picked.size(); i++)
         {
             if (Picked[i].name == name && Picked[i].returned_flag == ret_flag)
             {
@@ -122,19 +121,19 @@ public:
         Instances += num;
     }
 
-    
-    
+
+
 private:
     unsigned int ID, Quantity, Instances;
     vector<reader> Picked;
 };
 
-void Get_information_about_book_and_readers(vector<cathalog_book> catalog, vector<reader> readers, unsigned int ID){
-    for (int i = 0; i < catalog.size(); i++){
-        if (catalog[i].Get_ID() == ID){
+void Get_information_about_book_and_readers(vector<cathalog_book> catalog, vector<reader> readers, unsigned int ID) {
+    for (int i = 0; i < catalog.size(); i++) {
+        if (catalog[i].Get_ID() == ID) {
             catalog[i].information_about_book();
             for (int j = 0; j < readers.size(); j++) {
-                if (j == 0){
+                if (j == 0) {
                     cout << "Информация о читателе: ";
                 }
                 int index = catalog[i].find_index_of_picker_using_name(readers[j].name);
@@ -146,18 +145,18 @@ void Get_information_about_book_and_readers(vector<cathalog_book> catalog, vecto
     }
 }
 
-void Find_book_by_name(vector<cathalog_book> catalog, string title){
-    for (int i = 0; i < catalog.size(); i++){
-        if (catalog[i].Get_title() == title){
+void Find_book_by_name(vector<cathalog_book> catalog, string title) {
+    for (int i = 0; i < catalog.size(); i++) {
+        if (catalog[i].Get_title() == title) {
             catalog[i].information_about_book();
             cout << "ID: " << catalog[i].Get_ID() << "\n";
         }
     }
 }
 
-void Find_book_by_author(vector<cathalog_book> catalog, vector<string> authors){
-    for (int i = 0; i < catalog.size(); i++){
-        if (catalog[i].Get_authors() == authors){
+void Find_book_by_author(vector<cathalog_book> catalog, vector<string> authors) {
+    for (int i = 0; i < catalog.size(); i++) {
+        if (catalog[i].Get_authors() == authors) {
             catalog[i].information_about_book();
             cout << "ID: " << catalog[i].Get_ID() << "\n";
         }
@@ -182,7 +181,7 @@ vector<cathalog_book> delete_book_from_cathalog(vector<cathalog_book> cathalog, 
     }
     return cathalog;
 }
-void return_book(int ID, string name, vector <cathalog_book> &catalog);
+void return_book(int ID, string name, vector <cathalog_book>& catalog);
 vector <reader> readers_with_more_one_year_storing_book(vector <reader> r);
 unsigned int validator_unsigned_int(string str);
 int validator_int(string str, int more_then_zero_flag);
@@ -196,17 +195,17 @@ void print_menu()
         << "5. Удаление книги из каталога" << endl
         << "6. Вывод каталога" << endl
         << "7. Вывод информации по книге и читателям, взявшим книгу (по идентификатору книги)" << endl
-    	<< "8. Поиск книги в каталоге по названию с выдачей идентификатора" << endl
+        << "8. Поиск книги в каталоге по названию с выдачей идентификатора" << endl
         << "9. Поиск книги в каталоге по автору с выдачей идентификатора" << endl
         << "10. Выдача книги читателю" << endl
         << "11. Возврат книги читателем" << endl
         << "12. Вывод списка читателей, не вернувших книги в течение года" << endl;
 }
 int main() {
-    //setlocale(LC_ALL, "russian");
 
-    SetConsoleCP(CP_UTF8);
-    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+    //setlocale(LC_ALL, "russian");
 
     vector<string> authors;
     vector<book> books;
@@ -216,10 +215,11 @@ int main() {
     int sw_num;
     //создаю ридера
     //создание тут говорит о том, что он сегодня берет...
-    std::time_t rawtime = std::time({});
-    std::time(&rawtime);
-    struct tm* timeinfo;
-    timeinfo = localtime(&rawtime);
+    time_t rawtime = time({});
+    time(&rawtime);
+    struct tm* timeinfo = new tm;
+    localtime_s(timeinfo, &rawtime);
+
     reader r;
     r.name = "Vasya";
     r.day = timeinfo->tm_mday;
@@ -249,7 +249,7 @@ int main() {
             book b_new;
             cout << "Введите название книги\n";
             string name;
-            cin.ignore();
+            //cin.ignore();
             getline(cin, name);
             /*
             std::cout << "Укажите автора\n";
@@ -348,7 +348,7 @@ int main() {
             }
             cout << "Введите НАЗВАНИЕ книги на удаление\n";
             string id;
-            cin.ignore();
+            //cin.ignore();
             getline(cin, id);
             int f = 0;
             for (int i = 0; i < books.size(); i++)
@@ -359,7 +359,7 @@ int main() {
                     break;
                 }
             }
-            if (f==1)
+            if (f == 1)
                 books = delete_book(books, id);
             else
             {
@@ -397,7 +397,7 @@ int main() {
                 cout << "----------------------------\n";
                 books[i].information_about_book();
             }
-            cout << endl<<"Введите название книги для добавления\n";
+            cout << endl << "Введите название книги для добавления\n";
             string book_name;
             cin.ignore();
             getline(cin, book_name);
@@ -430,7 +430,7 @@ int main() {
             system("cls");
             print_menu();
             break;
-            
+
         }
         case 5://удаление книги из каталога
         {
@@ -443,12 +443,12 @@ int main() {
                 cout << "Число экземпляров в наличии: " << cathalog[i].get_instances() << endl;
                 cout << "Общее число экземпляров: " << cathalog[i].get_quantity() << endl;
             }
-            cout << endl<<"Введите ID книги для удаления\n";
+            cout << endl << "Введите ID книги для удаления\n";
             string id_book_to_del;
             cin.ignore();
             getline(cin, id_book_to_del);
             unsigned int tmp1 = validator_unsigned_int(id_book_to_del);
-            if (tmp1 == SN || tmp1>=cathalog.size())
+            if (tmp1 == SN || tmp1 >= cathalog.size())
             {
                 cout << "Неверный ID\n";
                 system("pause");
@@ -482,12 +482,12 @@ int main() {
         }
         case 7: {
             unsigned int id;
-            cout << endl <<"Введите ID книги для вывода информации\n";
+            cout << endl << "Введите ID книги для вывода информации\n";
             string id_book;
             cin.ignore();
             getline(cin, id_book);
             unsigned int tmp1 = validator_unsigned_int(id_book);
-            if (tmp1 == SN || tmp1>=cathalog.size())
+            if (tmp1 == SN || tmp1 >= cathalog.size())
             {
                 cout << "Неверный ID\n";
                 system("pause");
@@ -522,7 +522,7 @@ int main() {
                     break;
                 }
             }
-            if (f==1){
+            if (f == 1) {
                 Find_book_by_name(cathalog, title);
             }
             else
@@ -574,7 +574,7 @@ int main() {
                     break;
                 }
             }
-            if (f==1){
+            if (f == 1) {
                 Find_book_by_author(cathalog, authors);
             }
             else
@@ -610,7 +610,7 @@ int main() {
             cout << "Какую выдать книгу (введите ID): " << endl;
             getline(cin, id_book);
             unsigned int tmp1 = validator_unsigned_int(id_book);
-            if (tmp1 == SN || tmp1>id_counter)
+            if (tmp1 == SN || tmp1 > id_counter)
             {
                 cout << "Неверный ID\n";
                 system("pause");
@@ -619,14 +619,14 @@ int main() {
                 break;
             }
             cout << "Кому выдать книгу (введите ID по порядку): " << endl;
-            for (auto el : readers){
-                cout << "Name - " << el.name << ", ID -  " << el.id<<endl;
+            for (auto el : readers) {
+                cout << "Name - " << el.name << ", ID -  " << el.id << endl;
             }
             string id_reader;
             //cin.ignore();
             getline(cin, id_reader);
             unsigned int tmp2 = validator_unsigned_int(id_reader);
-            if (tmp2 == SN || tmp2>id_counter)
+            if (tmp2 == SN || tmp2 > id_counter)
             {
                 cout << "Неверный reader\n";
                 system("pause");
@@ -641,7 +641,7 @@ int main() {
             print_menu();
             break;
         }
-        case 11: {// Возврат книги читателем 
+        case 11: {// Возврат книги читателем
             system("cls");
             for (int i = 0; i < books.size(); i++)
             {
@@ -654,7 +654,7 @@ int main() {
             cout << "Какую книгу вернуть (Введите ID): " << endl;
             getline(cin, id_book);
             unsigned int tmp1 = validator_unsigned_int(id_book);
-            if (tmp1 == SN || tmp1>=cathalog.size())
+            if (tmp1 == SN || tmp1 >= cathalog.size())
             {
                 cout << "Неверный ID\n";
                 system("pause");
@@ -663,14 +663,14 @@ int main() {
                 break;
             }
             cout << "Кто хочет вернуть книгу (введите ID по порядку): " << endl;
-            for (auto el : readers){
+            for (auto el : readers) {
                 cout << "Name - " << el.name << ", ID -  " << el.id << endl;
             }
             string id_reader;
             //cin.ignore();
             getline(cin, id_reader);
             unsigned int tmp2 = validator_unsigned_int(id_reader);
-            if (tmp2 == SN || tmp2>=readers.size())
+            if (tmp2 == SN || tmp2 >= readers.size())
             {
                 cout << "Неверный reader\n";
                 system("pause");
@@ -678,7 +678,7 @@ int main() {
                 print_menu();
                 break;
             }
-            return_book(tmp1, readers[tmp2].name , cathalog);
+            return_book(tmp1, readers[tmp2].name, cathalog);
             cout << "Успех!\n";
             system("pause");
             system("cls");
@@ -713,10 +713,10 @@ int main() {
 vector <reader> readers_with_more_one_year_storing_book(vector <reader> r)
 {
     vector <reader> black;
-    std::time_t rawtime = std::time({});
-    std::time(&rawtime);
-    struct tm* timeinfo;
-    timeinfo = localtime(&rawtime);
+    time_t rawtime = time({});
+    time(&rawtime);
+    struct tm* timeinfo = new tm;
+    localtime_s(timeinfo, &rawtime);
     int year = timeinfo->tm_year;
     int month = timeinfo->tm_mon;
     int day = timeinfo->tm_mday;
@@ -727,13 +727,13 @@ vector <reader> readers_with_more_one_year_storing_book(vector <reader> r)
             black.push_back(r[i]);
             continue;
         }
-        else if (abs(r[i].year - year) ==1) {
+        else if (abs(r[i].year - year) == 1) {
             if (month - r[i].month > 0)
             {
                 black.push_back(r[i]);
                 continue;
             }
-            else if (month - r[i].month ==0 && day - r[i].day > 0)
+            else if (month - r[i].month == 0 && day - r[i].day > 0)
             {
                 black.push_back(r[i]);
                 continue;
@@ -785,7 +785,7 @@ int validator_int(string str, int more_then_zero_flag)
 }
 unsigned int validator_unsigned_int(string str)
 {
-    if (str[0] == '-' || str.length()==0)
+    if (str[0] == '-' || str.length() == 0)
         return SN;
     if (str.length() > 10)
         return SN;
